@@ -68,6 +68,7 @@ contract lottery {
      
 
      function withdrawWins () external returns(bool withdrawn){
+        require(msg.sender == address(0), " this address can't withdraw");
         require (block.timestamp > timeLimit, "Lottery time not over");
         bool Status = participation(msg.sender);
         require (Status, "You didn't participatein the lottery");
