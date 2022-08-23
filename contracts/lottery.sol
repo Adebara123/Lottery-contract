@@ -7,7 +7,7 @@ contract lottery {
     // function to withdraw 
     // function to get source of randomness
     // cant play more than once
-    // didnt use a function to set time and lottery limit because other functions an be 
+    // didnt use a function to set time and lottery limit because other functions an be modified again
 
     uint lotteryLimit;
     uint timeLimit;
@@ -54,7 +54,7 @@ contract lottery {
 
     function placeLottery () public payable {
         require (msg.value >= lotteryLimit, "You cannot participate in this lottery");
-        require (timeLimit > block.timestamp , "You can no longer place a bet");
+        require (block.timestamp > timeLimit , "You can no longer place a bet");
         check(msg.sender);
     }
 
@@ -65,6 +65,7 @@ contract lottery {
      function ownerPercentage () private view returns(uint percent) {
          percent = (address(this).balance * 20) / 100;
      }
+     
 
      function withdrawWins () external returns(bool withdrawn){
         require (block.timestamp > timeLimit, "Lottery time not over");
