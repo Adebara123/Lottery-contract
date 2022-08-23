@@ -3,16 +3,12 @@
 pragma solidity ^0.8.9;
 
 contract lottery {
-    // function to place lottery 
-    // function to withdraw 
-    // function to get source of randomness
-    // cant play more than once
-    // didnt use a function to set time and lottery limit because other functions an be modified again
-
     uint lotteryLimit;
     uint timeLimit;
     address owner;
     //bool started;
+
+    event lotteryParticipants( address participant, uint value);
 
     address[] participants;
     constructor (uint _timeLimit, uint _lotteryLimit) {   
@@ -20,13 +16,6 @@ contract lottery {
          lotteryLimit = _lotteryLimit;
         timeLimit = _timeLimit + block.timestamp;
     }
-
-    // function setConditions(uint _timeLimit, uint _lotteryLimit)external returns(bool) {
-    //     lotteryLimit = _lotteryLimit;
-    //     timeLimit = _timeLimit + block.timestamp;
-    //     started = true;
-    //     return started;
-    // }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "You are not the owner");
@@ -56,6 +45,8 @@ contract lottery {
         require (msg.value >= lotteryLimit, "You cannot participate in this lottery");
         require (block.timestamp > timeLimit , "You can no longer place a bet");
         check(msg.sender);
+        emit lotteryParticipants( msg.sender, msg.value);
+
     }
 
     function random () private view returns(uint) {
@@ -67,7 +58,7 @@ contract lottery {
      }
      
 
-     function withdrawWins () external returns(bool withdrawn){
+     function withdrawWins () external onlyOwner returns(bool withdrawn){
         require(msg.sender == address(0), " this address can't withdraw");
         require (block.timestamp > timeLimit, "Lottery time not over");
         bool Status = participation(msg.sender);
@@ -83,6 +74,9 @@ contract lottery {
         uint gain = ownerPercentage();
         payable(msg.sender).transfer(gain);
      }
+
+     receive () external payable {}
+     fallback () external payable {} 
 
 
 }
